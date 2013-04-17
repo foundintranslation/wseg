@@ -1,0 +1,4 @@
+wseg
+====
+
+wseg: Chinese segmenter
