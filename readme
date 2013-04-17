@@ -1,0 +1,67 @@
+Usage of command "ngramseg"
+ -in <I/P text file>
+ -out <O/P egmented text file>
+ -lm <I/P file in ARPA LM format>
+ -order 1       ngram order, can be 1, 2, or 3
+ -freq <O/P freq file>
+ -debug 2      debug level
+ -skipn 0      skip first n fields each line
+ -keep_skip    keep the skipped fields in output
+ -maxchar 8    max#chars per Chinese word
+ -symfile      instruct ngramseg what to do with special symbols
+ -removefile   see readme at the end
+ -lcase        convert non-ch words into lower case
+ -ucase        convert non-ch words into upper case
+ -LFM          longest-first match instead of ngram ML based segmentation
+ -removespace  remove space between chs before segmentation
+ -garbage 8000 If input too long, throw it away as garbage
+ -help:        Print this message
+ -comments ";;" A line beginning with this string is considered a comment line.
+                By default, it is "##". For stm input, use -comments ";;"
+
+ngramseg is designed to do word segmentation on GB encoded Chinese text.
+Basically it assumes every Chinese character is double-byte and
+the first byte's highest bit is 1. So it should work for Big-5 encoding,
+too.
+
+You always have to supply ngramseg with a language model using -lm.
+The language model can be either 1-gram, 2-gram, or 3-gram, according
+to -order, for ML segmentation.
+
+ngramseg can also be used for longest-first segmentation if -LFM is used. 
+In this case, the vocabulary from the input LM is used, but not the n-gram 
+probabilities, nor -order.
+
+The input file (-in) and output file (-out) have identical
+number of lines. Comment lines (those begin with two pound signs, 
+by default) will be output intact. After segmentation is finished,
+ngramseg also dumps the frequency distribution of the words in
+the input text.
+
+SPECIAL SYMBOLS/PUNCTUATIONS:
+Notice -keepsym is outdated now. By default, everything in the input is kept by ngramseg.
+
+All double-bytes are treated as Chinese characters and all single-bytes English words.
+If you want to remove/replace a particular double-byte symbol or a particular single-byte
+punctuation/symbol, list it in a file and use 
+     ngramseg -symfile <filename>
+The first column of the file indicates the source and the 2nd column the destination. 
+If you want to remove the source, make the 2nd column = space. See remove-punc.map.
+
+This is useful if your source text contains double-byte punctuations and you want
+to unify them to single-byte punctuations, then all you have to do is to create a
+file with the source-destination mapping and supply it to -symfile. See full2half-punc.map.
+
+If you are sure that whenever a certain double-byte character appears in the input line,
+the line is garbage, then you can use -removefile <file> to remove those lines.
+See remove-l.txt for example.
+
+Here is a sample usage:
+   ngramseg -in test.gb -out test.out -lm small.1bo -freq test.frq -removespace
+
+If your Linux system is too old, you may not have libstdc++.so.6. Therefore the library
+is included in the package. See go.sample to check how to use the library.
+
+
+ 
+
